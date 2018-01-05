@@ -30,8 +30,8 @@ public class AutonMode {
         this.drivingLibrary = new DrivingLibrary(opMode, FTCAlliance.RED, FTCPosition.LEFT);
         this.drivingLibrary.setSpeed(0.75);
         this.colorArm = opMode.hardwareMap.get(Servo.class,"color_arm");
-        colorSensor = opMode.hardwareMap.get(ColorSensor.class, "colorSensor");
-        distanceSensor = opMode.hardwareMap.get(DistanceSensor.class, "colorSensor");
+        colorSensor = opMode.hardwareMap.get(ColorSensor.class, "color_sensor");
+        distanceSensor = opMode.hardwareMap.get(DistanceSensor.class, "color_sensor");
         this.opMode = opMode;
     }
 
@@ -43,9 +43,8 @@ public class AutonMode {
         int relativeLayoutId = opMode.hardwareMap.appContext.getResources().getIdentifier("RelativeLayout", "id", this.opMode.hardwareMap.appContext.getPackageName());
         final View relativeLayout = ((Activity) this.opMode.hardwareMap.appContext).findViewById(relativeLayoutId);
 
-
         //MOVE SERVO
-        colorArm.setPosition(1);
+        colorArm.setPosition(0.1);
         opMode.sleep(2000);
 
         //SENSE COLOR
@@ -53,34 +52,34 @@ public class AutonMode {
                 (int) (colorSensor.green() * SCALE_FACTOR),
                 (int) (colorSensor.blue() * SCALE_FACTOR),
                 hsvValues);
-        opMode.telemetry.addData("Alpha", colorSensor.alpha());
         opMode.telemetry.addData("Red  ", colorSensor.red());
-        opMode.telemetry.addData("Blue ", colorSensor.blue());
         relativeLayout.post(new Runnable() {
             public void run() {
                 relativeLayout.setBackgroundColor(Color.HSVToColor(0xff, values));
             }
         });
-        opMode.sleep(5000);
-
+        opMode.telemetry.update();
+        opMode.sleep(3000);
         if (alliance == FTCAlliance.RED) {
-            if (colorSensor.red() > 50) {
-                drivingLibrary.driveStraight(0, 1);
+            if (colorSensor.red() >= 25) {
+                drivingLibrary.driveStraight(0, -.4f);
             }
             else {
-                drivingLibrary.driveStraight(0, -1);
+                drivingLibrary.driveStraight(0, .4f);
             }
         } else {
-            if (colorSensor.red() > 50) {
-                drivingLibrary.driveStraight(0, -1);
+            if (colorSensor.red() >= 25) {
+                drivingLibrary.driveStraight(0, .4f);
 
             }
             else {
-                drivingLibrary.driveStraight(0, 1);
+                drivingLibrary.driveStraight(0, -.4f);
             }
         }
         opMode.sleep(500);
         drivingLibrary.stopDrivingMotors();
+        colorArm.setPosition(1);
+        opMode.telemetry.update();
     }
 
     public void driveToSafeZone() {
