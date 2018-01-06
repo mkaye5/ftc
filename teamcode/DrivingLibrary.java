@@ -16,18 +16,14 @@ public class DrivingLibrary {
     private DcMotor rightRear;
     private DcMotor[] allMotors;
     private HardwareMap hardwareMap;
-    private FTCAlliance alliance;
-    private FTCPosition position;
 
     // other variables
     private double speedSetting;
     private OpMode opMode;
     private boolean color;
 
-    public DrivingLibrary(OpMode opMode, FTCAlliance alliance, FTCPosition position) {
+    public DrivingLibrary(OpMode opMode) {
         this.opMode = opMode;
-        this.alliance = alliance;
-        this.position = position;
         hardwareMap = opMode.hardwareMap;
 
         leftFront = hardwareMap.get(DcMotor.class, "left_front");

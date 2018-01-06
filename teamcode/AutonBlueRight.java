@@ -2,20 +2,17 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 
 /**
- * Created by megankaye on 1/4/18.
+ * Created by megankaye on 1/5/18.
  */
 
 @Autonomous
-public class AutonRedLeft extends LinearOpMode {
-    DrivingLibrary drivingLibrary;
+public class AutonBlueRight extends LinearOpMode {
     AutonMode autonMode;
 
     public void runOpMode() throws InterruptedException {
-        autonMode = new AutonMode(this, FTCAlliance.RED, FTCPosition.LEFT);
+        autonMode = new AutonMode(this, FTCAlliance.BLUE, FTCPosition.RIGHT);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -23,7 +20,8 @@ public class AutonRedLeft extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            autonMode.knockOffJewel();
+            Direction dir = autonMode.knockOffJewel();
+            autonMode.driveToSafeZone(dir);
             sleep(30000);
         }
     }

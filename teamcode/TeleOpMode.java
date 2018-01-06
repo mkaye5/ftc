@@ -16,7 +16,7 @@ public class TeleOpMode extends LinearOpMode {
     DcMotor pulley;
 
     public void runOpMode() throws InterruptedException {
-        drivingLibrary = new DrivingLibrary(this, FTCAlliance.RED, FTCPosition.LEFT);
+        drivingLibrary = new DrivingLibrary(this);
         drivingLibrary.setSpeed(0.75);
         servoLeft = hardwareMap.get(Servo.class, "left_arm");
         servoRight = hardwareMap.get(Servo.class, "right_arm");
@@ -40,8 +40,8 @@ public class TeleOpMode extends LinearOpMode {
             drivingLibrary.turn(gamepad1.right_stick_x, -gamepad1.right_stick_y);
 
             if (clawSync) {
-                closeClaws = gamepad1.left_bumper;
-                openClaws = gamepad1.left_trigger > 0.5;
+                closeClaws = gamepad2.left_bumper;
+                openClaws = gamepad2.left_trigger > 0.5;
 
                 if (closeClaws) {
                     servoLeft.setPosition(servoLeft.getPosition() + 0.02);
@@ -52,10 +52,10 @@ public class TeleOpMode extends LinearOpMode {
                     servoRight.setPosition(servoRight.getPosition() + 0.02);
                 }
             } else {
-                closeLeftClaw = gamepad1.left_bumper;
-                openLeftClaw = gamepad1.left_trigger > 0.5;
-                closeRightClaw = gamepad1.right_bumper;
-                openRightClaw = gamepad1.right_trigger > 0.5;
+                closeLeftClaw = gamepad2.left_bumper;
+                openLeftClaw = gamepad2.left_trigger > 0.5;
+                closeRightClaw = gamepad2.right_bumper;
+                openRightClaw = gamepad2.right_trigger > 0.5;
 
                 if (closeLeftClaw) {
                     servoLeft.setPosition(servoLeft.getPosition() + 0.02);
@@ -72,15 +72,15 @@ public class TeleOpMode extends LinearOpMode {
                 }
             }
 
-            if (gamepad1.dpad_up) {
+            if (gamepad2.dpad_up) {
                 pulley.setPower(0.5);
-            } else if (gamepad1.dpad_down) {
+            } else if (gamepad2.dpad_down) {
                 pulley.setPower(-0.5);
             } else {
                 pulley.setPower(0);
             }
 
-            if (gamepad1.a) {
+            if (gamepad2.a) {
                 clawSync = !clawSync;
             }
 
