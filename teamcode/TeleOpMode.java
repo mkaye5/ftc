@@ -28,7 +28,6 @@ public class TeleOpMode extends LinearOpMode {
         boolean closeRightClaw = false;
         boolean openLeftClaw = false;
         boolean openRightClaw = false;
-        boolean clawSync = true;
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -39,45 +38,16 @@ public class TeleOpMode extends LinearOpMode {
             drivingLibrary.driveStraight(gamepad1.left_stick_x, -gamepad1.left_stick_y);
             drivingLibrary.turn(gamepad1.right_stick_x, -gamepad1.right_stick_y);
 
-            if (clawSync) {
-                closeClaws = gamepad2.left_bumper;
-                openClaws = gamepad2.left_trigger > 0.5;
+            closeClaws = gamepad2.left_bumper;
+            openClaws = gamepad2.left_trigger > 0.5;
 
-                if (closeClaws) {
-                    servoLeft.setPosition(servoLeft.getPosition() + 0.02);
-                    servoRight.setPosition(servoRight.getPosition() - 0.02);
-                }
-                if (openClaws) {
-                    if (servoLeft.getPosition() - 0.02 < 0.1) {
-                        servoLeft.setPosition(0.1);
-                    } else {
-                        servoLeft.setPosition(servoLeft.getPosition() - 0.02);
-                    }
-                    if (servoRight.getPosition() + 0.02 > 0.9) {
-                        servoRight.setPosition(0.9);
-                    } else {
-                        servoRight.setPosition(servoRight.getPosition() + 0.02);
-                    }
-                }
-            } else {
-                closeLeftClaw = gamepad2.left_bumper;
-                openLeftClaw = gamepad2.left_trigger > 0.5;
-                closeRightClaw = gamepad2.right_bumper;
-                openRightClaw = gamepad2.right_trigger > 0.5;
-
-                if (closeLeftClaw) {
-                    servoLeft.setPosition(servoLeft.getPosition() + 0.02);
-                }
-                if (openLeftClaw) {
-                    servoLeft.setPosition(servoLeft.getPosition() - 0.02);
-                }
-
-                if (closeRightClaw) {
-                    servoRight.setPosition(servoRight.getPosition() - 0.02);
-                }
-                if (openRightClaw) {
-                    servoRight.setPosition(servoRight.getPosition() + 0.02);
-                }
+            if (closeClaws) {
+                servoLeft.setPosition(0.55);
+                servoRight.setPosition(0.45);
+            }
+            if (openClaws) {
+                servoLeft.setPosition(0.1);
+                servoRight.setPosition(0.9);
             }
 
             if (gamepad2.dpad_up) {
@@ -88,14 +58,9 @@ public class TeleOpMode extends LinearOpMode {
                 pulley.setPower(0);
             }
 
-            if (gamepad2.a) {
-                clawSync = !clawSync;
-            }
-
             telemetry.addData("Status", "Running");
             telemetry.addData("Left Arm Pos", servoLeft.getPosition());
             telemetry.addData("Right Arm Pos", servoRight.getPosition());
-            telemetry.addData("Claw Sync", clawSync);
             telemetry.update();
         }
     }
