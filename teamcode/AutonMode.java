@@ -11,6 +11,20 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
+import org.firstinspires.ftc.robotcore.external.navigation.VuMarkInstanceId;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+
 /**
  * Created by megankaye on 1/3/18.
  */
@@ -23,6 +37,7 @@ public class AutonMode {
     LinearOpMode opMode;
     ColorSensor colorSensor;
     DistanceSensor distanceSensor;
+    VuMarkIdentifyLibrary vuMarkIdentify;
 
     public AutonMode(LinearOpMode opMode, FTCAlliance alliance, FTCPosition position) {
         this.alliance = alliance;
@@ -33,9 +48,10 @@ public class AutonMode {
         colorSensor = opMode.hardwareMap.get(ColorSensor.class, "color_sensor");
         distanceSensor = opMode.hardwareMap.get(DistanceSensor.class, "color_sensor");
         this.opMode = opMode;
+        this.vuMarkIdentify = new VuMarkIdentifyLibrary(opMode);
     }
 
-    public Direction knockOffJewel() {
+    /*public Direction knockOffJewel() {
         // hsvValues is an array that will hold the hue, saturation, and value information.
         float hsvValues[] = {0F, 0F, 0F};
         final float values[] = hsvValues;
@@ -52,7 +68,7 @@ public class AutonMode {
                 (int) (colorSensor.green() * SCALE_FACTOR),
                 (int) (colorSensor.blue() * SCALE_FACTOR),
                 hsvValues);
-        opMode.telemetry.addData("Red  ", colorSensor.red());
+        opMode.telemetry.addData("Red - blue * 2  ", colorSensor.red() - colorSensor.blue()*2);
         relativeLayout.post(new Runnable() {
             public void run() {
                 relativeLayout.setBackgroundColor(Color.HSVToColor(0xff, values));
@@ -62,7 +78,7 @@ public class AutonMode {
         opMode.sleep(3000);
         Direction dir;
         if (alliance == FTCAlliance.RED) {
-            if (colorSensor.red() >= 30) {
+            if (colorSensor.red() - colorSensor.blue()*2 > 0) {
                 drivingLibrary.driveStraight(0, -.4f);
                 dir = Direction.BACKWARD;
             }
@@ -71,10 +87,9 @@ public class AutonMode {
                 dir = Direction.FORWARD;
             }
         } else {
-            if (colorSensor.red() >= 15) {
+            if (colorSensor.red() - colorSensor.blue()*2 > 0) {
                 drivingLibrary.driveStraight(0, .4f);
                 dir = Direction.FORWARD;
-
             }
             else {
                 drivingLibrary.driveStraight(0, -.4f);
@@ -86,6 +101,79 @@ public class AutonMode {
         colorArm.setPosition(1);
         opMode.telemetry.update();
         return dir;
+    }*/
+    //updated code
+    public Direction knockOffJewel() {
+        // hsvValues is an array that will hold the hue, saturation, and value information.
+        float hsvValues[] = {0F, 0F, 0F};
+        final float values[] = hsvValues;
+        final double SCALE_FACTOR = 255;
+
+        //MOVE SERVO
+        colorArm.setPosition(0.1);
+        opMode.sleep(2000);
+
+        // convert the RGB values to HSV values.
+        //SENSE COLOR
+        Color.RGBToHSV(colorSensor.red() * 8, colorSensor.green() * 8, colorSensor.blue() * 8, hsvValues);
+        float hue = hsvValues[0];
+        opMode.telemetry.addData("hue", hue);
+
+        boolean seeingRedJewel = hue < 60 || hue > 320;
+        boolean seeingBlueJewel = hue > 120 && hue < 260;
+
+        //DELETE
+        if (seeingBlueJewel && !seeingRedJewel) {
+            opMode.telemetry.addData("Saw:", "Blue Jewel");
+        }
+        else if (!seeingBlueJewel && seeingRedJewel) {
+            opMode.telemetry.addData("Saw:", "Red Jewel");
+        }
+        else {
+            opMode.telemetry.addData("Saw:", "Unknown");
+        }
+        //DELETE
+        opMode.telemetry.update();
+        /*
+        opMode.sleep(3000);
+        Direction dir;
+        if (alliance == FTCAlliance.RED) {
+            if (seeingBlueJewel) {
+                drivingLibrary.driveStraight(0, -.4f);
+                dir = Direction.BACKWARD;
+            }
+            else if (seeingRedJewel) {
+                drivingLibrary.driveStraight(0, .4f);
+                dir = Direction.FORWARD;
+            }
+            else {
+                colorArm.setPosition(1);
+                opMode.sleep(250);
+                drivingLibrary.driveStraight(0, .4f);
+                dir = Direction.FORWARD;
+            }
+        } else {
+            if (seeingRedJewel) {
+                drivingLibrary.driveStraight(0, .4f);
+                dir = Direction.FORWARD;
+            }
+            else if (seeingBlueJewel){
+                drivingLibrary.driveStraight(0, -.4f);
+                dir = Direction.BACKWARD;
+            }
+            else {
+                colorArm.setPosition(1);
+                opMode.sleep(250);
+                drivingLibrary.driveStraight(0, .4f);
+                dir = Direction.FORWARD;
+            }
+        }
+        opMode.sleep(500);
+        drivingLibrary.stopDrivingMotors();
+        colorArm.setPosition(1);
+        opMode.telemetry.update();
+        return dir*/
+        return Direction.FORWARD;
     }
 
     public void driveToSafeZone(Direction dir) {
@@ -122,16 +210,14 @@ public class AutonMode {
                     drivingLibrary.driveStraight(-1f, 0);
                     opMode.sleep(1000);
                     drivingLibrary.driveStraight(0, -.4f);
-                    opMode.sleep(500);
+                    opMode.sleep(800);
                 }
             }
 
         } else {
-            opMode.telemetry.addData("else", "yes");
             if (dir == Direction.BACKWARD) {
                 if (alliance == FTCAlliance.RED) {
                     //if red, on right side, and went backwards
-                    opMode.telemetry.addData("backwards", "yes");
                     drivingLibrary.driveStraight(0, .6f);
                     opMode.sleep(2000);
                     drivingLibrary.driveStraight(-1f, 0);
@@ -148,7 +234,6 @@ public class AutonMode {
             } else {
                 if (alliance == FTCAlliance.RED) {
                     //if red, on right side, and went forwards
-                    opMode.telemetry.addData("backwards", "no");
                     drivingLibrary.driveStraight(0, .4f);
                     opMode.sleep(800);
                     drivingLibrary.driveStraight(-1f, 0);
@@ -166,6 +251,10 @@ public class AutonMode {
         }
         opMode.telemetry.update();
         drivingLibrary.stopDrivingMotors();
+    }
+
+    public RelicRecoveryVuMark identifyPictograph() {
+        return vuMarkIdentify.identifyPictograph(opMode);
     }
 
 }

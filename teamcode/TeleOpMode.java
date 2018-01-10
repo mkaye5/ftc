@@ -17,7 +17,7 @@ public class TeleOpMode extends LinearOpMode {
 
     public void runOpMode() throws InterruptedException {
         drivingLibrary = new DrivingLibrary(this);
-        drivingLibrary.setSpeed(0.75);
+        drivingLibrary.setSpeed(1);
         servoLeft = hardwareMap.get(Servo.class, "left_arm");
         servoRight = hardwareMap.get(Servo.class, "right_arm");
         pulley = hardwareMap.get(DcMotor.class, "pulley");
@@ -48,8 +48,16 @@ public class TeleOpMode extends LinearOpMode {
                     servoRight.setPosition(servoRight.getPosition() - 0.02);
                 }
                 if (openClaws) {
-                    servoLeft.setPosition(servoLeft.getPosition() - 0.02);
-                    servoRight.setPosition(servoRight.getPosition() + 0.02);
+                    if (servoLeft.getPosition() - 0.02 < 0.1) {
+                        servoLeft.setPosition(0.1);
+                    } else {
+                        servoLeft.setPosition(servoLeft.getPosition() - 0.02);
+                    }
+                    if (servoRight.getPosition() + 0.02 > 0.9) {
+                        servoRight.setPosition(0.9);
+                    } else {
+                        servoRight.setPosition(servoRight.getPosition() + 0.02);
+                    }
                 }
             } else {
                 closeLeftClaw = gamepad2.left_bumper;

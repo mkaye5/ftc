@@ -19,11 +19,8 @@ public class DrivingLibrary {
 
     // other variables
     private double speedSetting;
-    private OpMode opMode;
-    private boolean color;
 
     public DrivingLibrary(OpMode opMode) {
-        this.opMode = opMode;
         hardwareMap = opMode.hardwareMap;
 
         leftFront = hardwareMap.get(DcMotor.class, "left_front");
