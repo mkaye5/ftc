@@ -8,9 +8,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
  */
 @Autonomous
 public class TestJewelArm extends LinearOpMode {
-    AutonMode autonMode;
+    AutonModeLibrary autonMode;
     public void runOpMode() throws InterruptedException {
-        autonMode = new AutonMode(this, FTCAlliance.BLUE, FTCPosition.LEFT);
+        autonMode = new AutonModeLibrary(this, FTCAlliance.BLUE, FTCPosition.LEFT);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
