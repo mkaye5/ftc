@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -29,17 +30,28 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
  * Created by megankaye on 1/3/18.
  */
 
-public class AutonMode {
-    DrivingLibrary drivingLibrary;
-    Servo colorArm;
-    FTCAlliance alliance;
-    FTCPosition position;
+public class AutonModeLibrary {
     LinearOpMode opMode;
-    ColorSensor colorSensor;
-    DistanceSensor distanceSensor;
+
+    DrivingLibrary drivingLibrary;
     VuMarkIdentifyLibrary vuMarkIdentify;
 
-    public AutonMode(LinearOpMode opMode, FTCAlliance alliance, FTCPosition position) {
+    FTCAlliance alliance;
+    FTCPosition position;
+
+    Servo colorArm;
+    ColorSensor colorSensor;
+    DistanceSensor distanceSensor;
+    DcMotor pullyMotor;
+    Servo servoLeftUpper;
+    Servo servoLeftLower;
+    Servo servoRightUpper;
+    Servo servoRightLower;
+    DigitalChannel touchSensor;
+
+    int[][] cryptobox;
+
+    public AutonModeLibrary(LinearOpMode opMode, FTCAlliance alliance, FTCPosition position) {
         this.alliance = alliance;
         this.position = position;
         this.drivingLibrary = new DrivingLibrary(opMode);
@@ -47,61 +59,12 @@ public class AutonMode {
         this.colorArm = opMode.hardwareMap.get(Servo.class,"color_arm");
         colorSensor = opMode.hardwareMap.get(ColorSensor.class, "color_sensor");
         distanceSensor = opMode.hardwareMap.get(DistanceSensor.class, "color_sensor");
+        touchSensor = opMode.hardwareMap.get(DigitalChannel.class, "touchSensor");
         this.opMode = opMode;
         this.vuMarkIdentify = new VuMarkIdentifyLibrary(opMode);
+        this.cryptobox = new int[3][4];
     }
 
-    /*public Direction knockOffJewel() {
-        // hsvValues is an array that will hold the hue, saturation, and value information.
-        float hsvValues[] = {0F, 0F, 0F};
-        final float values[] = hsvValues;
-        final double SCALE_FACTOR = 255;
-        int relativeLayoutId = opMode.hardwareMap.appContext.getResources().getIdentifier("RelativeLayout", "id", this.opMode.hardwareMap.appContext.getPackageName());
-        final View relativeLayout = ((Activity) this.opMode.hardwareMap.appContext).findViewById(relativeLayoutId);
-
-        //MOVE SERVO
-        colorArm.setPosition(0.1);
-        opMode.sleep(2000);
-
-        //SENSE COLOR
-        Color.RGBToHSV((int) (colorSensor.red() * SCALE_FACTOR),
-                (int) (colorSensor.green() * SCALE_FACTOR),
-                (int) (colorSensor.blue() * SCALE_FACTOR),
-                hsvValues);
-        opMode.telemetry.addData("Red - blue * 2  ", colorSensor.red() - colorSensor.blue()*2);
-        relativeLayout.post(new Runnable() {
-            public void run() {
-                relativeLayout.setBackgroundColor(Color.HSVToColor(0xff, values));
-            }
-        });
-        opMode.telemetry.update();
-        opMode.sleep(3000);
-        Direction dir;
-        if (alliance == FTCAlliance.RED) {
-            if (colorSensor.red() - colorSensor.blue()*2 > 0) {
-                drivingLibrary.driveStraight(0, -.4f);
-                dir = Direction.BACKWARD;
-            }
-            else {
-                drivingLibrary.driveStraight(0, .4f);
-                dir = Direction.FORWARD;
-            }
-        } else {
-            if (colorSensor.red() - colorSensor.blue()*2 > 0) {
-                drivingLibrary.driveStraight(0, .4f);
-                dir = Direction.FORWARD;
-            }
-            else {
-                drivingLibrary.driveStraight(0, -.4f);
-               dir = Direction.BACKWARD;
-            }
-        }
-        opMode.sleep(500);
-        drivingLibrary.stopDrivingMotors();
-        colorArm.setPosition(1);
-        opMode.telemetry.update();
-        return dir;
-    }*/
     //updated code
     public Direction knockOffJewel() {
         // hsvValues is an array that will hold the hue, saturation, and value information.
@@ -119,7 +82,7 @@ public class AutonMode {
         float hue = hsvValues[0];
         opMode.telemetry.addData("hue", hue);
 
-        boolean seeingRedJewel = hue < 60 || hue > 320;
+        boolean seeingRedJewel = hue < 20 || hue > 320;
         boolean seeingBlueJewel = hue > 120 && hue < 260;
 
         //DELETE
@@ -254,7 +217,30 @@ public class AutonMode {
     }
 
     public RelicRecoveryVuMark identifyPictograph() {
+        //pick up
         return vuMarkIdentify.identifyPictograph(opMode);
+    }
+
+    public void driveGetGlyphPlace() {
+        /*
+        cryptobox looks like
+        |   |   |   | (row 3) --> Accessed: [x][3]
+        |   |   |   | (row 2)
+        |   |   |   | (row 1)
+        | 0 |1  |2  | (row 0) --> Accessed: [x][0]
+         */
+
+        //picks up glyph
+        //checks color/pressure
+        //checks pattern/avaliable spaces
+        //uses touch?
+
+    }
+
+    public boolean testTouchSensor() {
+        // is button pressed?
+        return touchSensor.getState();
+
     }
 
 }
