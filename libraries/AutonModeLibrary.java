@@ -34,6 +34,10 @@ public class AutonModeLibrary {
     DistanceSensor distanceSensor;
     DigitalChannel touchSensor;
 
+    int taps;
+    boolean tapped = false;
+    int state = 0;
+
     int[][] cryptobox;
 
     public AutonModeLibrary(LinearOpMode opMode, FTCAlliance alliance, FTCPosition position) {
@@ -125,6 +129,7 @@ public class AutonModeLibrary {
         return Direction.FORWARD;
     }
 
+    //EDIT this
     public void driveToSafeZone(Direction dir) {
         opMode.sleep(500);
         if (position == FTCPosition.LEFT) {
@@ -205,6 +210,91 @@ public class AutonModeLibrary {
     public RelicRecoveryVuMark identifyPictograph() {
         //pick up
         return vuMarkIdentify.identifyPictograph(opMode);
+    }
+
+    public void pickUpGlyph() {
+        //pick up
+    }
+
+    public boolean identifyAndPlace(Direction direction) {
+        // use alliance and position in OP mode
+        boolean finished = false;
+        switch (state) {
+            case 0:
+                //go and turn
+                RelicRecoveryVuMark vuMark = identifyPictograph();
+                //taps algorithm?
+                if (vuMark == RelicRecoveryVuMark.RIGHT) {
+                    //go right
+                    //CHANGE taps?
+                    taps = 3;
+                    state += 1;
+                } else if (vuMark == RelicRecoveryVuMark.LEFT) {
+                    //go left
+                    //CHANGE taps?
+                    taps = 1;
+                    state += 1;
+                }
+                else if (vuMark == RelicRecoveryVuMark.CENTER) {
+                    //go center
+                    taps = 2;
+                    state += 1;
+                } else {
+                    //CHECK how much time has passed????
+                    //try?
+                    //abandon ship. Put glyph in Center automatically
+                    taps = 0;
+                }
+                opMode.telemetry.addData("Taps", taps);
+                opMode.telemetry.update();
+                opMode.sleep(200);
+                break;
+            case 1:
+                //DRIVE
+                opMode.telemetry.addData("Taps", taps);
+                opMode.telemetry.update();
+                //checking sensor.
+                tapped = testTouchSensor();
+                if (!tapped) {
+                    taps -= 1;
+                }
+                //secondary if statement
+                if (taps <= 0) {
+                    state += 1;
+                }
+                //check failsafe
+                break;
+            case 2:
+                //turn
+                opMode.telemetry.addData("Turning", "Yes!");
+                opMode.telemetry.update();
+                //turn for howevermany seconds
+                opMode.sleep(3000);
+                state += 1;
+                break;
+            case 3:
+                //place glyph
+                opMode.telemetry.addData("Placing glyph", "Yes!");
+                opMode.telemetry.update();
+                opMode.sleep(3000);
+                state += 1;
+                break;
+            case 4:
+                //GET GLYPHS
+                opMode.telemetry.addData("Getting additional glyphs", "Yes!");
+                opMode.telemetry.update();
+                opMode.sleep(3000);
+                state += 1;
+                break;
+            default:
+                opMode.telemetry.addData("waiting", "Yes!");
+                opMode.telemetry.update();
+                opMode.sleep(3000);
+                finished = true;
+                //stop all motors
+                break;
+        }
+        return finished;
     }
 
     public void driveGetGlyphPlace() {
