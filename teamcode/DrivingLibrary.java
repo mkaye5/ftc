@@ -35,37 +35,13 @@ public class DrivingLibrary {
     }
 
     public void driveStraight(float x, float y) {
-        if (x <= Math.cos(Math.PI/4) && x >= Math.cos(Math.PI*3/4)) {
-            setAllMotors(y * speedSetting);
-        } else if (y >= Math.sin(-Math.PI/4) && y <= Math.sin(Math.PI/4)) {
-            leftFront.setPower(x * speedSetting);
-            rightFront.setPower(-x * speedSetting);
-            leftRear.setPower(-x * speedSetting);
-            rightRear.setPower(x * speedSetting);
-        } else {
-            stopDrivingMotors();
-        }
-    }
+        double multiplier = Math.sqrt(2.0) / 2.0;
 
-//    public void driveStraightClicks(Direction dir, int clicks) {
-//        resetEncoders();
-//        for (DcMotor motor : all_motors) {
-//            motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//            motor.setTargetPosition(clicks);
-//        }
-//
-//        if (dir == Direction.UP) {
-//            setAllMotors(speed_setting);
-//
-//            while (left_front.getCurrentPosition() < clicks
-//                    && right_front.getCurrentPosition() < clicks) {
-//                // wait for motors to hit target position
-//            }
-//        } else if (dir == Direction.DOWN) {
-//
-//        }
-//        stopDrivingMotors();
-//    }
+        leftFront.setPower(multiplier * speedSetting * (y + x));
+        rightFront.setPower(multiplier * speedSetting * (y - x));
+        leftRear.setPower(multiplier * speedSetting * (y - x));
+        rightRear.setPower(multiplier * speedSetting * (y + x));
+    }
 
     public void turn(float x, float y) {
         leftFront.setPower((y + x) * speedSetting);
