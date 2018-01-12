@@ -5,6 +5,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.libraries.DrivingLibrary;
+import org.firstinspires.ftc.libraries.GlyphArmLibrary;
+
 /**
  * Created by lamanwyner on 12/30/17.
  */
