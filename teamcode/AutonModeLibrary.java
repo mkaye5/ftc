@@ -35,6 +35,7 @@ public class AutonModeLibrary {
 
     DrivingLibrary drivingLibrary;
     VuMarkIdentifyLibrary vuMarkIdentify;
+    GlyphArmLibrary glyphArm;
 
     FTCAlliance alliance;
     FTCPosition position;
@@ -42,11 +43,6 @@ public class AutonModeLibrary {
     Servo colorArm;
     ColorSensor colorSensor;
     DistanceSensor distanceSensor;
-    DcMotor pullyMotor;
-    Servo servoLeftUpper;
-    Servo servoLeftLower;
-    Servo servoRightUpper;
-    Servo servoRightLower;
     DigitalChannel touchSensor;
 
     int[][] cryptobox;
@@ -54,8 +50,9 @@ public class AutonModeLibrary {
     public AutonModeLibrary(LinearOpMode opMode, FTCAlliance alliance, FTCPosition position) {
         this.alliance = alliance;
         this.position = position;
-        this.drivingLibrary = new DrivingLibrary(opMode);
+        drivingLibrary = new DrivingLibrary(opMode);
         this.drivingLibrary.setSpeed(0.75);
+        glyphArm = new GlyphArmLibrary(opMode);
         this.colorArm = opMode.hardwareMap.get(Servo.class,"color_arm");
         colorSensor = opMode.hardwareMap.get(ColorSensor.class, "color_sensor");
         distanceSensor = opMode.hardwareMap.get(DistanceSensor.class, "color_sensor");
