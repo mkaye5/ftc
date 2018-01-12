@@ -4,6 +4,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.libraries.AutonModeLibrary;
+import org.firstinspires.ftc.enums.Direction;
+import org.firstinspires.ftc.enums.FTCAlliance;
+import org.firstinspires.ftc.enums.FTCPosition;
 
 /**
  * Created by megankaye on 1/11/18.
