@@ -16,8 +16,6 @@ import org.firstinspires.ftc.libraries.GlyphArmLibrary;
 public class TeleOpMode extends LinearOpMode {
     DrivingLibrary drivingLibrary;
     GlyphArmLibrary glyphArmLibrary;
-    Servo servoLeft, servoRight;
-    DcMotor pulley;
 
     public void runOpMode() throws InterruptedException {
         drivingLibrary = new DrivingLibrary(this);
