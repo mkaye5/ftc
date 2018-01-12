@@ -14,7 +14,7 @@ public class GlyphArmLibrary {
     private OpMode opMode;
     private HardwareMap hardwareMap;
     private DcMotor pulley;
-    private Servo leftArm, rightArm;
+    private Servo leftTop, leftBottom, rightTop, rightBottom;
 
     private double[] closedPosition, openPosition;
     private double[] maxClosed, maxOpen;
@@ -26,8 +26,10 @@ public class GlyphArmLibrary {
         this.opMode = opMode;
         hardwareMap = opMode.hardwareMap;
         pulley = hardwareMap.get(DcMotor.class, "pulley");
-        leftArm = hardwareMap.get(Servo.class, "left_arm");
-        rightArm = hardwareMap.get(Servo.class, "right_arm");
+        leftTop = hardwareMap.get(Servo.class, "left_top");
+        leftBottom = hardwareMap.get(Servo.class, "left_bottom");
+        rightTop = hardwareMap.get(Servo.class, "right_top");
+        rightBottom = hardwareMap.get(Servo.class, "right_bottom");
 
         closedPosition = new double[] {0.55, 0.45};
         openPosition = new double[] {0.1, 0.9};
@@ -68,36 +70,52 @@ public class GlyphArmLibrary {
 
     public void closeArmsPreset(boolean lb) {
         if (lb) {
-            leftArm.setPosition(closedPosition[0]);
-            rightArm.setPosition(closedPosition[1]);
+            leftTop.setPosition(closedPosition[0]);
+            leftBottom.setPosition(closedPosition[0]);
+            rightTop.setPosition(closedPosition[1]);
+            rightBottom.setPosition(closedPosition[1]);
         }
     }
 
     public void openArmsPreset(float lt) {
         if (lt > 0.5) {
-            leftArm.setPosition(openPosition[0]);
-            rightArm.setPosition(openPosition[1]);
+            leftTop.setPosition(openPosition[0]);
+            leftBottom.setPosition(openPosition[0]);
+            rightTop.setPosition(openPosition[1]);
+            rightBottom.setPosition(openPosition[1]);
         }
     }
 
     public void closeArmsIncrement(boolean rb) {
         if (rb) {
-            if (leftArm.getPosition() + increment <= maxClosed[0]) {
-                leftArm.setPosition(leftArm.getPosition() + increment);
+            if (leftTop.getPosition() + increment <= maxClosed[0]) {
+                leftTop.setPosition(leftTop.getPosition() + increment);
             }
-            if (rightArm.getPosition() - increment >= maxClosed[1]) {
-                rightArm.setPosition(rightArm.getPosition() - increment);
+            if (leftBottom.getPosition() + increment <= maxClosed[0]) {
+                leftBottom.setPosition(leftBottom.getPosition() + increment);
+            }
+            if (rightTop.getPosition() - increment >= maxClosed[1]) {
+                rightTop.setPosition(rightTop.getPosition() - increment);
+            }
+            if (rightBottom.getPosition() - increment >= maxClosed[1]) {
+                rightBottom.setPosition(rightBottom.getPosition() - increment);
             }
         }
     }
 
     public void openArmsIncrement(float rt) {
         if (rt > 0.5) {
-            if (leftArm.getPosition() - increment >= maxOpen[0]) {
-                leftArm.setPosition(leftArm.getPosition() - increment);
+            if (leftTop.getPosition() - increment >= maxOpen[0]) {
+                leftTop.setPosition(leftTop.getPosition() - increment);
             }
-            if (rightArm.getPosition() + increment <= maxOpen[1]) {
-                rightArm.setPosition(rightArm.getPosition() + increment);
+            if (leftBottom.getPosition() - increment >= maxOpen[0]) {
+                leftBottom.setPosition(leftBottom.getPosition() - increment);
+            }
+            if (rightTop.getPosition() + increment <= maxOpen[1]) {
+                rightTop.setPosition(rightTop.getPosition() + increment);
+            }
+            if (rightBottom.getPosition() + increment <= maxOpen[1]) {
+                rightBottom.setPosition(rightBottom.getPosition() + increment);
             }
         }
     }
