@@ -2,8 +2,10 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.enums.Direction;
+import org.firstinspires.ftc.enums.FTCAlliance;
+import org.firstinspires.ftc.enums.FTCPosition;
 
 /**
  * Created by megankaye on 1/4/18.
