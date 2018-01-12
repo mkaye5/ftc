@@ -13,10 +13,10 @@ import org.firstinspires.ftc.enums.FTCPosition;
 
 @Autonomous
 public class AutonRedLeft extends LinearOpMode {
-    AutonMode autonMode;
+    AutonModeLibrary autonMode;
 
     public void runOpMode() throws InterruptedException {
-        autonMode = new AutonMode(this, FTCAlliance.RED, FTCPosition.LEFT);
+        autonMode = new AutonModeLibrary(this, FTCAlliance.RED, FTCPosition.LEFT);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
