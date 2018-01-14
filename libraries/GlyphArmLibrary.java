@@ -16,8 +16,10 @@ public class GlyphArmLibrary {
     private DcMotor pulley;
     private Servo leftTop, leftBottom, rightTop, rightBottom;
 
-    private double[] closedPosition, openPosition;
+    private double[] closedBottomPosition, closedTopPosition, openBottomPosition,
+        openTopPosition;
     private double[] maxClosed, maxOpen;
+    private Servo[] servos;
     private double increment;
 
     double pulleySpeed;
@@ -31,73 +33,46 @@ public class GlyphArmLibrary {
         rightTop = hardwareMap.get(Servo.class, "right_top");
         rightBottom = hardwareMap.get(Servo.class, "right_bottom");
 
-        closedPosition = new double[] {0.55, 0.45};
-        openPosition = new double[] {0.1, 0.9};
-        maxClosed = new double[] {1.0, 0};
-        maxOpen = new double[] {0.1, 0.9};
-        increment = 0.02;
+        closedBottomPosition = new double[] {0.64, 0.33};
+        closedTopPosition = new double[] {0.86, 0.4};
+        openBottomPosition = new double[] {0.1, 0.9};
+        openTopPosition = new double[] {0, 1};
+        servos = new Servo[] {leftTop, leftBottom, rightTop, rightBottom};
+        increment = 0.002;
 
         pulleySpeed = 0.5;
     }
 
-    public void setClosedPosition(double l, double r) {
-        closedPosition[0] = l;
-        closedPosition[1] = r;
-    }
-
-    public void setOpenPosition(double l, double r) {
-        openPosition[0] = l;
-        openPosition[1] = r;
-    }
-
-    public void setIncrement(double d) {
-        increment = d;
-    }
-
-    public void setMaxClosed(double l, double r) {
-        maxClosed[0] = l;
-        maxClosed[1] = r;
-    }
-
-    public void setMaxOpen(double l, double r) {
-        maxOpen[0] = l;
-        maxOpen[1] = r;
-    }
-
-    public void setPulleySpeed(double speed) {
-        pulleySpeed = speed;
-    }
-
     public void closeArmsPreset(boolean lb) {
         if (lb) {
-            leftTop.setPosition(closedPosition[0]);
-            leftBottom.setPosition(closedPosition[0]);
-            rightTop.setPosition(closedPosition[1]);
-            rightBottom.setPosition(closedPosition[1]);
+            leftTop.setPosition(closedTopPosition[0]);
+            leftBottom.setPosition(closedBottomPosition[0]);
+            rightTop.setPosition(closedTopPosition[1]);
+            rightBottom.setPosition(closedBottomPosition[1]);
         }
     }
 
     public void openArmsPreset(float lt) {
         if (lt > 0.5) {
-            leftTop.setPosition(openPosition[0]);
-            leftBottom.setPosition(openPosition[0]);
-            rightTop.setPosition(openPosition[1]);
-            rightBottom.setPosition(openPosition[1]);
+            leftTop.setPosition(openTopPosition[0]);
+            leftBottom.setPosition(openBottomPosition[0]);
+            rightTop.setPosition(openTopPosition[1]);
+            rightBottom.setPosition(openBottomPosition[1]);
         }
     }
 
     public void closeArmsIncrement(boolean rb) {
         if (rb) {
-            if (leftTop.getPosition() + increment <= maxClosed[0]) {
+            if (leftTop.getPosition() + increment <= closedTopPosition[0]) {
                 leftTop.setPosition(leftTop.getPosition() + increment);
             }
-            if (leftBottom.getPosition() + increment <= maxClosed[0]) {
+            if (leftBottom.getPosition() + increment <= closedBottomPosition[0]) {
                 leftBottom.setPosition(leftBottom.getPosition() + increment);
             }
-            if (rightTop.getPosition() - increment >= maxClosed[1]) {
+            if (rightTop.getPosition() - increment >= closedTopPosition[1]) {
                 rightTop.setPosition(rightTop.getPosition() - increment);
             }
-            if (rightBottom.getPosition() - increment >= maxClosed[1]) {
+            if (rightBottom.getPosition() - increment >= closedBottomPosition[1]) {
                 rightBottom.setPosition(rightBottom.getPosition() - increment);
             }
         }
@@ -105,19 +80,50 @@ public class GlyphArmLibrary {
 
     public void openArmsIncrement(float rt) {
         if (rt > 0.5) {
-            if (leftTop.getPosition() - increment >= maxOpen[0]) {
+            if (leftTop.getPosition() - increment >= openTopPosition[0]) {
                 leftTop.setPosition(leftTop.getPosition() - increment);
             }
-            if (leftBottom.getPosition() - increment >= maxOpen[0]) {
+            if (leftBottom.getPosition() - increment >= openBottomPosition[0]) {
                 leftBottom.setPosition(leftBottom.getPosition() - increment);
             }
-            if (rightTop.getPosition() + increment <= maxOpen[1]) {
+            if (rightTop.getPosition() + increment <= openTopPosition[1]) {
                 rightTop.setPosition(rightTop.getPosition() + increment);
             }
-            if (rightBottom.getPosition() + increment <= maxOpen[1]) {
+            if (rightBottom.getPosition() + increment <= openBottomPosition[1]) {
                 rightBottom.setPosition(rightBottom.getPosition() + increment);
             }
         }
+    }
+
+    public void moveAllArms(Gamepad g1, Gamepad g2) {
+        if (g1.left_bumper) {
+            leftTop.setPosition(leftTop.getPosition() - increment);
+        }
+        if (g1.left_trigger > 0.5) {
+            leftBottom.setPosition(leftBottom.getPosition() - increment);
+        }
+        if (g1.right_bumper) {
+            leftTop.setPosition(leftTop.getPosition() + increment);
+        }
+        if (g1.right_trigger > 0.5) {
+            leftBottom.setPosition(leftBottom.getPosition() + increment);
+        }
+        if (g2.left_bumper) {
+            rightTop.setPosition(rightTop.getPosition() + increment);
+        }
+        if (g2.left_trigger > 0.5) {
+            rightBottom.setPosition(rightBottom.getPosition() + increment);
+        }
+        if (g2.right_bumper) {
+            rightTop.setPosition(rightTop.getPosition() - increment);
+        }
+        if (g2.right_trigger > 0.5) {
+            rightBottom.setPosition(rightBottom.getPosition() - increment);
+        }
+    }
+
+    public double getServoPos(int servo) {
+        return servos[servo].getPosition();
     }
 
     public void movePulley(Gamepad gamepad) {
